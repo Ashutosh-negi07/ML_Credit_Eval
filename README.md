@@ -1,6 +1,6 @@
 # Credit Risk Modeling System
 
-## 📌 Project Overview
+## Project Overview
 
 This project builds a Machine Learning system to predict whether a loan applicant is likely to default.
 
@@ -13,7 +13,7 @@ This is framed as a **Binary Classification Problem**:
 
 ---
 
-## 📊 Dataset Information
+## Dataset Information
 
 Dataset Used: German Credit Dataset  
 Total Records: 1000 customers  
@@ -40,7 +40,7 @@ The dataset is slightly imbalanced (70% / 30%), which reflects real-world bankin
 
 ---
 
-## 🧠 Problem Formulation
+## Problem Formulation
 
 We aim to learn a function:
 
@@ -55,7 +55,7 @@ The goal is to train a model that predicts the probability of default.
 
 ---
 
-## 🗂 Project Structure
+## Project Structure
 
 Credit_Risk_Project/
 
@@ -74,11 +74,11 @@ Credit_Risk_Project/
 
 ---
 
-# ✅ Work Completed
+# Work Completed
 
 ---
 
-## 📅 Day 1 – Data Understanding
+## Day 1 – Data Understanding
 
 1. Loaded dataset using pandas.
 2. Inspected dataset structure using:
@@ -92,9 +92,9 @@ Credit_Risk_Project/
 
 ---
 
-## 📅 Day 2 – Data Cleaning & Preprocessing
+## Day 2 – Data Cleaning & Preprocessing
 
-### 1️⃣ Handling Missing Values
+### Handling Missing Values
 
 Missing values were replaced with "Unknown" to preserve information:
 
@@ -103,7 +103,7 @@ df["Checking account"] = df["Checking account"].fillna("Unknown")
 
 ---
 
-### 2️⃣ Target Encoding
+### Target Encoding
 
 Converted:
 
@@ -116,7 +116,7 @@ This ensures compatibility with machine learning models.
 
 ---
 
-### 3️⃣ One-Hot Encoding
+### One-Hot Encoding
 
 Categorical features were converted into numeric format:
 
@@ -143,7 +143,7 @@ Final dataset shape:
 
 ---
 
-### 4️⃣ Feature–Target Separation
+### Feature–Target Separation
 
 Separated dataset into inputs and output:
 
@@ -157,7 +157,7 @@ This prepares the dataset for machine learning training.
 
 ---
 
-# 📈 Current Status
+# Current Status
 
 The dataset is now:
 
@@ -178,7 +178,7 @@ Next Steps:
 
 ---
 
-# 🛠 Technologies Used
+# Technologies Used
 
 - Python
 - Pandas
@@ -188,7 +188,7 @@ Next Steps:
 
 ---
 
-# 🎯 Project Goal
+# Project Goal
 
 To build a complete end-to-end credit risk prediction system that:
 
