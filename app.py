@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-st.title("🏦 Credit Risk Evaluation")
+st.title("Credit Risk Evaluation for a bank")
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "credit_risk_pipeline.pkl")
 

@@ -1,201 +1,154 @@
 # Credit Risk Modeling System
 
-## Project Overview
+An end-to-end machine learning project that predicts whether a loan applicant is likely to **default**. Built with scikit-learn and served as a **Streamlit web app**.
 
-This project builds a Machine Learning system to predict whether a loan applicant is likely to default.
-
-The objective is to simulate a real-world banking credit risk assessment process using historical customer data.
-
-This is framed as a **Binary Classification Problem**:
-
-- 0 → Good Customer (Low Risk)
-- 1 → Bad Customer (High Risk / Default Risk)
-
----
-
-## Dataset Information
-
-Dataset Used: German Credit Dataset  
-Total Records: 1000 customers  
-Total Features After Encoding: 20 columns  
-
-The dataset contains:
-
-- Age  
-- Job  
-- Housing  
-- Saving accounts  
-- Checking account  
-- Credit amount  
-- Duration  
-- Purpose  
-- Risk (Target Variable)
-
-Target Distribution:
-
-- Good Customers (0): 700  
-- Bad Customers (1): 300  
-
-The dataset is slightly imbalanced (70% / 30%), which reflects real-world banking data.
-
----
-
-## Problem Formulation
-
-We aim to learn a function:
-
-Customer Information → Credit Risk
-
-This is a supervised learning problem where:
-
-- X = Customer Features  
-- y = Credit Risk Label  
-
-The goal is to train a model that predicts the probability of default.
+A bank employee enters customer details → the model returns a default probability and a risk label (High Risk / Low Risk).
 
 ---
 
 ## Project Structure
 
+```
 Credit_Risk_Project/
-
-│
+├── app.py                          # Streamlit web app (entry point)
+├── requirements.txt                # Pinned Python dependencies
+├── .gitignore                      # Git ignore rules
 ├── data/
-│   └── german_credit_data.csv
-│
-├── notebooks/
-│   └── Day1.ipynb
-│
+│   └── german_credit_data.csv      # Raw dataset (1000 records)
 ├── models/
-│
-├── app/
-│
-└── README.md
+│   └── credit_risk_pipeline.pkl    # Trained sklearn pipeline
+├── notebooks/
+│   └── Day1.ipynb                  # Exploration & experimentation (Day 1–7)
+└── src/
+    └── train.py                    # Reproducible training script
+```
 
 ---
 
-# Work Completed
+## Dataset
+
+**German Credit Dataset** — 1000 customer records with 9 features + 1 target.
+
+| Feature | Type | Values |
+|---------|------|--------|
+| Age | Numeric | 18–75 |
+| Job | Numeric | 0–3 (skill level) |
+| Housing | Categorical | own, rent, free |
+| Saving accounts | Categorical | little, moderate, quite rich, rich, Unknown |
+| Checking account | Categorical | little, moderate, rich, Unknown |
+| Credit amount | Numeric | 250–18,424 |
+| Duration | Numeric | 4–72 months |
+| Purpose | Categorical | car, radio/TV, education, furniture/equipment, business, etc. |
+| Sex | Categorical | male, female |
+
+**Target:** Risk — good (0) / bad (1)  
+**Class distribution:** 700 good (70%) / 300 bad (30%) — imbalanced
 
 ---
 
-## Day 1 – Data Understanding
+## Approach
 
-1. Loaded dataset using pandas.
-2. Inspected dataset structure using:
-   - df.shape
-   - df.info()
-   - df.describe()
-3. Verified target distribution.
-4. Identified missing values in:
-   - Saving accounts
-   - Checking account
+### Problem
+Binary classification — predict probability of loan default from customer features.
 
----
+### Data Preprocessing
+- Missing values in `Saving accounts` (183) and `Checking account` (394) filled with `"Unknown"`
+- Target encoded: good → 0, bad → 1
+- Categorical features one-hot encoded, numeric features scaled via `StandardScaler`
+- All preprocessing bundled into an sklearn `Pipeline` so the app processes raw data directly
 
-## Day 2 – Data Cleaning & Preprocessing
+### Models Evaluated
 
-### Handling Missing Values
+| Model | Accuracy | Recall (Defaulters) | False Negatives |
+|-------|----------|---------------------|-----------------|
+| Logistic Regression (baseline) | 70% | 22% | 46 |
+| Logistic Regression (scaled) | 76% | 41% | 35 |
+| **Logistic Regression (balanced)** | **68%** | **61%** | **22** |
+| Random Forest (100 trees) | 74.5% | 32% | 40 |
+| Random Forest (tuned via GridSearchCV) | varies | varies | varies |
 
-Missing values were replaced with "Unknown" to preserve information:
+### Why Balanced Logistic Regression?
 
-df["Saving accounts"] = df["Saving accounts"].fillna("Unknown")
-df["Checking account"] = df["Checking account"].fillna("Unknown")
+In credit risk, **missing a defaulter (False Negative) is far more costly than rejecting a good customer (False Positive)**. The balanced model catches significantly more defaulters at the cost of some accuracy — the right trade-off for banking.
 
----
+### Threshold Tuning
 
-### Target Encoding
+Default threshold (0.5) was adjusted after ROC/AUC analysis (AUC = 0.746):
 
-Converted:
+| Threshold | Recall | Accuracy | False Negatives |
+|-----------|--------|----------|-----------------|
+| 0.5 | 63% | 68% | 22 |
+| **0.4** | **81%** | **63%** | **11** |
+| 0.3 | 90% | 53% | 6 |
 
-- good → 0  
-- bad → 1  
+Threshold 0.4 provides the best balance for real-world banking use.
 
-df["Risk"] = df["Risk"].map({"good": 0, "bad": 1})
+### Key Risk Drivers
 
-This ensures compatibility with machine learning models.
-
----
-
-### One-Hot Encoding
-
-Categorical features were converted into numeric format:
-
-df_encoded = pd.get_dummies(df, drop_first=True)
-
-This transformed features such as:
-
-- Sex
-- Housing
-- Purpose
-- Saving accounts
-- Checking account
-
-into binary indicator columns such as:
-
-- Sex_male
-- Housing_own
-- Purpose_car
-- etc.
-
-Final dataset shape:
-
-(1000, 20)
+| Feature | Impact |
+|---------|--------|
+| Checking account (little) | Strongest risk signal |
+| Duration | Longer loans → higher risk |
+| Credit amount | Larger loans → more risk |
+| Saving accounts (little) | Low savings → higher risk |
 
 ---
 
-### Feature–Target Separation
+## How to Use
 
-Separated dataset into inputs and output:
+### Run locally
 
-X = df_encoded.drop("Risk", axis=1)
-y = df_encoded["Risk"]
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-- X → All feature columns
-- y → Target column (Risk)
+# (Optional) Retrain the model
+python src/train.py
 
-This prepares the dataset for machine learning training.
+# Launch the app
+streamlit run app.py
+```
 
----
+### Deploy on Streamlit Cloud
 
-# Current Status
+1. Push this repo to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Click **New app** → select this repo → set main file to `app.py`
+4. Deploy
 
-The dataset is now:
-
-- Cleaned
-- Fully numeric
-- Properly encoded
-- Ready for model training
-
-Next Steps:
-
-- Perform train-test split
-- Train Logistic Regression model
-- Evaluate performance using confusion matrix, precision, recall, ROC-AUC
-- Compare with Random Forest
-- Add explainability (SHAP)
-- Build Streamlit dashboard
-- Deploy project
+Streamlit Cloud installs from `requirements.txt` automatically.
 
 ---
 
-# Technologies Used
+## Tech Stack
 
-- Python
-- Pandas
-- NumPy
-- Scikit-learn (upcoming)
-- Matplotlib / Seaborn (upcoming)
+| Tool | Purpose |
+|------|---------|
+| Python 3.13 | Language |
+| pandas | Data manipulation |
+| scikit-learn 1.8.0 | Pipeline, model training, preprocessing |
+| Streamlit | Web app framework |
+| joblib | Model serialization |
+| matplotlib / seaborn | Visualizations (notebook only) |
 
 ---
 
-# Project Goal
+## How It Works
 
-To build a complete end-to-end credit risk prediction system that:
+```
+german_credit_data.csv
+        │
+        ▼
+  src/train.py ──── cleans data, builds pipeline, trains, saves .pkl
+        │
+        ▼
+  models/credit_risk_pipeline.pkl ──── single file: preprocessing + model
+        │
+        ▼
+  app.py ──── loads pipeline, renders Streamlit UI, serves predictions
+```
 
-- Predicts loan default probability
-- Assists in loan approval decision-making
-- Demonstrates real-world ML workflow
-- Showcases production-level machine learning practices
+The pipeline object handles everything — scaling, encoding, and prediction — in a single `pipeline.predict()` call. The app never touches raw data processing.
 
 ---
 

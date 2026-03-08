@@ -20,3 +20,8 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Project notes (local only)
+Daywise_Progress.md
+README2.md
+README3.md
