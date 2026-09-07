@@ -5,7 +5,7 @@ import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-st.title("Credit Risk Evaluation for a bank")
+st.title("credit risk evaluation for a Bank")
 
 BASE_DIR = os.path.dirname(__file__)
 MODEL_PATH = os.path.join(BASE_DIR, "models", "credit_risk_pipeline.pkl")
@@ -27,9 +27,10 @@ def load_data():
 
 df_ref = load_data()
 
-st.sidebar.header("Customer Details")
+st.sidebar.header("Customer details")
 
 age = st.sidebar.slider("Age", 18, 75, 30)
+
 credit_amount = st.sidebar.number_input("Credit Amount", 500, 20000, 5000)
 duration = st.sidebar.slider("Duration (Months)", 6, 72, 24)
 job = st.sidebar.selectbox("Job Level", [0,1,2,3])
@@ -64,9 +65,9 @@ if st.sidebar.button("Predict Risk"):
     st.metric("Default Probability", f"{probability:.2%}")
 
     if prediction == 1:
-        st.error("⚠ High Risk Customer")
+        st.error("⚠ high risk customer")
     else:
-        st.success("✔ Low Risk Customer")
+        st.success("✔ low risk customer")
 
     # --- Risk probability gauge ---
     fig, ax = plt.subplots(figsize=(6, 1.2))
