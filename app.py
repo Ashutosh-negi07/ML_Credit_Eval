@@ -5,7 +5,7 @@ import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-st.title("Credit Risk Evaluation for a bank")
+st.title("credit risk evaluation for a Bank")
 
 BASE_DIR = os.path.dirname(__file__)
 MODEL_PATH = os.path.join(BASE_DIR, "models", "credit_risk_pipeline.pkl")
